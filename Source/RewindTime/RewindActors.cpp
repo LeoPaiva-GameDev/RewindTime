@@ -2,6 +2,8 @@
 
 
 #include "RewindActors.h"
+#include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ARewindActors::ARewindActors()
@@ -9,8 +11,10 @@ ARewindActors::ARewindActors()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh->CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	Mesh->SetupAttachment(RootComponent);
+	//ARewindTimeCharacter Character = Cast<ARewindTimeCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -18,9 +22,9 @@ void ARewindActors::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitialLocation = Mesh->GetOwner()->GetActorLocation();
+	InitialLocation = GetActorLocation();
 
-	FinalLocation[0] = InitialLocation;
+	FinalLocation.Add(InitialLocation);
 }
 
 // Called every frame
@@ -28,27 +32,31 @@ void ARewindActors::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ActualLocation = Mesh->GetOwner()->GetActorLocation();
+	ActualLocation = GetActorLocation();
 	
 	if(ActualLocation != FinalLocation.Last())
 	{
 		FinalLocation.Add(ActualLocation);
 	}
 
-	if(Character->bIsRewinding == true)
+	if(Character)
 	{
-		Rewind();
+		if(Character->bIsRewinding == true)
+		{
+			Rewind();
+		}
 	}
+	
 }
 
 void ARewindActors::Rewind()
 {
-	while (ActualLocation != InitialLocation)
+	if(ActualLocation != InitialLocation)
 	{
 		for(int32 i = FinalLocation.Num(); i >= 0; i--)
 		{
-			Mesh->GetOwner()->SetActorLocation(FinalLocation[i]);
+			//Mesh->GetOwner()->SetActorLocation(FinalLocation[i]);
+			SetActorLocation(FinalLocation[i]);
 		}
 	}
 }
-

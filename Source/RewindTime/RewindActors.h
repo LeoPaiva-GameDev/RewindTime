@@ -22,9 +22,6 @@ class REWINDTIME_API ARewindActors : public AActor
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrvateAcsses = "true"))
 	TArray<FVector> FinalLocation;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrvateAcsses = "true"))
-	UStaticMeshComponent* Mesh;
-
 	UPROPERTY(EditAnywhere, Category = "Character")
 	ARewindTimeCharacter* Character;
 
@@ -34,6 +31,9 @@ class REWINDTIME_API ARewindActors : public AActor
 	public:	
 	// Sets default values for this actor's properties
 	ARewindActors();
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UStaticMeshComponent* Mesh;
 
 	protected:
 	// Called when the game starts or when spawned
